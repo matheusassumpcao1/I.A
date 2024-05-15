@@ -85,6 +85,14 @@ def clusters(df):
     plt.grid(True)
     plt.show()
 
+def k_means(df):
+    kmeans = KMeans(n_clusters=3, random_state=42)
+    kmeans.fit(df)
+    labels = kmeans.labels_
+    df['cluster'] = labels
+
+
+
 
 
 #Carregar o dataset Wine e explorar suas características básicas (número de amostras, características, distribuição dos dados, etc.).
@@ -95,8 +103,9 @@ print(df)
 
 num_amostras(df)
 num_caracteristicas(df)
-#distribuicao_dados(df)
+distribuicao_dados(df)
 print(normalizacao(df).head())
 clusters(df) #K=3
-
-# Determinação do Número de Clusters (k):•Utilize o método Elbow Method paraencontrar o K
+df_normalizado = normalizacao(df)
+k_means(df_normalizado)
+print(df_normalizado)
