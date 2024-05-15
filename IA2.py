@@ -68,7 +68,22 @@ def normalizacao(df):
     df_normalized['target'] = y 
     return df_normalized
 
-    
+def clusters(df):
+    inertia = []
+    for k in range(1, 11):
+        # Instanciar e treinar o modelo KMeans
+        kmeans = KMeans(n_clusters=k, random_state=42)
+        kmeans.fit(df)
+        # Adicionar a inércia à lista
+        inertia.append(kmeans.inertia_)
+
+    plt.plot(range(1, 11), inertia, marker='o')
+    plt.xlabel('Número de Clusters (k)')
+    plt.ylabel('Inércia')
+    plt.title('Método do Cotovelo para Determinação de k')
+    plt.xticks(range(1, 11))
+    plt.grid(True)
+    plt.show()
 
 
 
@@ -80,7 +95,8 @@ print(df)
 
 num_amostras(df)
 num_caracteristicas(df)
-distribuicao_dados(df)
+#distribuicao_dados(df)
 print(normalizacao(df).head())
+clusters(df) #K=3
 
 # Determinação do Número de Clusters (k):•Utilize o método Elbow Method paraencontrar o K
