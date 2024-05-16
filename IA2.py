@@ -1,4 +1,3 @@
-# Importar bibliotecas necessárias
 from sklearn.datasets import load_wine
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
@@ -7,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix, adjusted_rand_score, accuracy_score
 
 def distribuicao_dados(df):
     """
@@ -90,6 +90,39 @@ def k_means(df):
     kmeans.fit(df)
     labels = kmeans.labels_
     df['cluster'] = labels
+    return labels
+
+def map_clusters_to_labels(clusters, labels):
+    # Cria uma matriz de confusão entre clusters e labels
+    conf_matrix = confusion_matrix(labels, clusters)
+    # Encontra a melhor correspondência entre clusters e labels
+    mapping = {}
+    for cluster in range(3):
+        label = conf_matrix[cluster].argmax()
+        mapping[cluster] = label
+    return [mapping[cluster] for cluster in clusters]
+
+def calculo_metricas(df, mapeamento):
+    # Calcular métricas de avaliação
+    conf_matrix = confusion_matrix(df['target'], mapeamento)
+    adjusted_rand = adjusted_rand_score(df['target'], labels)
+    accuracy = accuracy_score(df['target'], mapeamento)
+
+    print("Matriz de Confusão:")
+    print(conf_matrix)
+    print(f"Índice de Rand Ajustado: {adjusted_rand:.4f}")
+    print(f"Acurácia: {accuracy:.4f}")
+    return conf_matrix
+
+def visual_matriz_confusao(conf_matrix):
+    # Visualização da Matriz de Confusão
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+    plt.xlabel('Clusters Preditos')
+    plt.ylabel('Etiquetas Reais')
+    plt.title('Matriz de Confusão entre Clusters e Etiquetas Reais')
+    plt.show()
+
+
 
 
 
@@ -107,5 +140,10 @@ distribuicao_dados(df)
 print(normalizacao(df).head())
 clusters(df) #K=3
 df_normalizado = normalizacao(df)
-k_means(df_normalizado)
+labels = k_means(df_normalizado)
 print(df_normalizado)
+mapeamento = map_clusters_to_labels(labels, df_normalizado['target'])
+conf_matrix = calculo_metricas(df_normalizado, mapeamento)
+visual_matriz_confusao(conf_matrix)
+
+
